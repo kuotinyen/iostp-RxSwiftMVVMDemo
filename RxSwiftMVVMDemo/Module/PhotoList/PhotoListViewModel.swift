@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
 class PhotoListViewModel {
     
     let apiService: APIServiceProtocol
-
+    
     var photos: [Photo] = [Photo]()
     
     var cellViewMdoels: [PhotoListCellViewModel] = [PhotoListCellViewModel]()
@@ -43,12 +45,24 @@ class PhotoListViewModel {
         }
     }
     
+    private func updateCellViewModel() {
+        var vms = [PhotoListCellViewModel]()
+        for photo in photos {
+            vms.append( createCellViewModel(photo: photo) )
+        }
+        self.cellViewMdoels = vms
+    }
+    
+}
+
+extension PhotoListViewModel {
+    
     func getCellViewModel( at indexPath: IndexPath ) -> PhotoListCellViewModel {
         return cellViewMdoels[indexPath.row]
     }
     
     func createCellViewModel( photo: Photo ) -> PhotoListCellViewModel {
-
+        
         //Wrap a description
         var descTextContainer: [String] = [String]()
         if let camera = photo.camera {
@@ -67,15 +81,6 @@ class PhotoListViewModel {
                                        imageUrl: photo.image_url,
                                        dateText: dateFormatter.string(from: photo.created_at) )
     }
-    
-    private func updateCellViewModel() {
-        var vms = [PhotoListCellViewModel]()
-        for photo in photos {
-            vms.append( createCellViewModel(photo: photo) )
-        }
-        self.cellViewMdoels = vms
-    }
-    
 }
 
 extension PhotoListViewModel {
