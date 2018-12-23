@@ -14,7 +14,8 @@ class PhotoListViewModel {
     
     let apiService: APIServiceProtocol
     
-    var photos: [Photo] = [Photo]()
+    var photos: Observable<[Photo]> { return photosRelay.asObservable() }
+    private let photosRelay: BehaviorRelay<[Photo]> = BehaviorRelay(value: [])
     
     var cellViewMdoels: [PhotoListCellViewModel] = [PhotoListCellViewModel]()
     
@@ -38,7 +39,8 @@ class PhotoListViewModel {
         
         self.updateLoadingStatus?( true )
         apiService.fetchPopularPhoto { [weak self] (success, photos, error) in
-            self?.photos = photos
+            self?.photosRelay.accept(photos)
+            
             self?.updateCellViewModel()
             self?.updateLoadingStatus?(false)
             self?.reloadTableViewClosure?()
@@ -47,7 +49,7 @@ class PhotoListViewModel {
     
     private func updateCellViewModel() {
         var vms = [PhotoListCellViewModel]()
-        for photo in photos {
+        for photo in photosRelay.value {
             vms.append( createCellViewModel(photo: photo) )
         }
         self.cellViewMdoels = vms
@@ -85,7 +87,7 @@ extension PhotoListViewModel {
 
 extension PhotoListViewModel {
     func userPressed( at indexPath: IndexPath ){
-        let photo = self.photos[indexPath.row]
+        let photo = self.photosRelay.value[indexPath.row]
         if photo.for_sale {
             self.isAllowSegue = true
             self.selectedPhoto = photo
