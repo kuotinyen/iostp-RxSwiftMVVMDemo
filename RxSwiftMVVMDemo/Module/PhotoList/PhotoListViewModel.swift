@@ -20,6 +20,8 @@ class PhotoListViewModel {
     var cellViewModels: Observable<[PhotoListCellViewModel]> { return cellViewModelsRelay.asObservable() }
     private let cellViewModelsRelay: BehaviorRelay<[PhotoListCellViewModel]> = BehaviorRelay(value: [])
     
+    let bag = DisposeBag()
+    
     var numberOfCells: Int {
         return cellViewModelsRelay.value.count
     }
@@ -34,6 +36,16 @@ class PhotoListViewModel {
     
     init( apiService: APIServiceProtocol ) {
         self.apiService = apiService
+        
+        photos
+            .map { photos -> [PhotoListCellViewModel] in
+                photos.map { self.createCellViewModel(photo: $0) }
+            }
+            .subscribe(onNext: { [weak self] (vms) in
+                guard let `self` = self else { return }
+                self.cellViewModelsRelay.accept(vms)
+            })
+            .disposed(by: bag)
     }
     
     func viewIsReady() {
@@ -41,19 +53,10 @@ class PhotoListViewModel {
         self.updateLoadingStatus?( true )
         apiService.fetchPopularPhoto { [weak self] (success, photos, error) in
             self?.photosRelay.accept(photos)
-            
-            self?.updateCellViewModel()
+        
             self?.updateLoadingStatus?(false)
             self?.reloadTableViewClosure?()
         }
-    }
-    
-    private func updateCellViewModel() {
-        var vms = [PhotoListCellViewModel]()
-        for photo in photosRelay.value {
-            vms.append( createCellViewModel(photo: photo) )
-        }
-        cellViewModelsRelay.accept(vms)
     }
     
 }
