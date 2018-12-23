@@ -30,7 +30,6 @@ class PhotoListViewModel {
     
     var selectedPhoto: Photo?
 
-    var reloadTableViewClosure: (()->())?
     var showAlertClosure: (( _ message: String )->())?
     var updateLoadingStatus: ((Bool)->())?
     
@@ -55,7 +54,6 @@ class PhotoListViewModel {
             self?.photosRelay.accept(photos)
         
             self?.updateLoadingStatus?(false)
-            self?.reloadTableViewClosure?()
         }
     }
     

@@ -8,6 +8,8 @@
 
 import UIKit
 import SDWebImage
+import RxSwift
+import RxCocoa
 
 class PhotoListViewController: UIViewController {
     
@@ -17,6 +19,8 @@ class PhotoListViewController: UIViewController {
     lazy var viewModel: PhotoListViewModel = {
         return PhotoListViewModel(apiService: APIService())
     }()
+    
+    let bag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,11 +61,12 @@ class PhotoListViewController: UIViewController {
             }
         }
         
-        viewModel.reloadTableViewClosure = { [weak self] () in
-            DispatchQueue.main.async {
+        viewModel.cellViewModels
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (vms) in
                 self?.tableView.reloadData()
-            }
-        }
+            })
+            .disposed(by: bag)
         
         viewModel.viewIsReady()
 
