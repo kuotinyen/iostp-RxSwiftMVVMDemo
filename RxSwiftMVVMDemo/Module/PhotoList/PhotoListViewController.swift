@@ -108,25 +108,22 @@ extension PhotoListViewController: UITableViewDelegate, UITableViewDataSource {
         return 150.0
     }
     
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         self.viewModel.userPressed(at: indexPath)
         if viewModel.isAllowSegue {
-            return indexPath
-        }else {
-            return nil
+            goDetailVC()
         }
     }
-
-}
-
-extension PhotoListViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? PhotoDetailViewController,
-            let photo = viewModel.selectedPhoto {
-            vc.imageUrl = photo.image_url
-        }
+    
+    func goDetailVC() {
+        let vc = PhotoDetailViewController()
+        let photo = viewModel.selectedPhoto
+        vc.imageUrl = photo?.image_url
+        
+        self.navigationController?.pushViewController(vc, animated: true)
     }
+    
 }
 
 class PhotoListTableViewCell: UITableViewCell {

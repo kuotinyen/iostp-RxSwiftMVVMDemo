@@ -7,4 +7,5 @@ target 'RxSwiftMVVMDemo' do
 
   # Pods for RxSwiftMVVMDemo
   pod 'SDWebImage'
+  pod 'SnapKit'
 end
