@@ -17,10 +17,11 @@ class PhotoListViewModel {
     var photos: Observable<[Photo]> { return photosRelay.asObservable() }
     private let photosRelay: BehaviorRelay<[Photo]> = BehaviorRelay(value: [])
     
-    var cellViewMdoels: [PhotoListCellViewModel] = [PhotoListCellViewModel]()
+    var cellViewModels: Observable<[PhotoListCellViewModel]> { return cellViewModelsRelay.asObservable() }
+    private let cellViewModelsRelay: BehaviorRelay<[PhotoListCellViewModel]> = BehaviorRelay(value: [])
     
     var numberOfCells: Int {
-        return cellViewMdoels.count
+        return cellViewModelsRelay.value.count
     }
     
     var isAllowSegue: Bool = false
@@ -52,7 +53,7 @@ class PhotoListViewModel {
         for photo in photosRelay.value {
             vms.append( createCellViewModel(photo: photo) )
         }
-        self.cellViewMdoels = vms
+        cellViewModelsRelay.accept(vms)
     }
     
 }
@@ -60,7 +61,7 @@ class PhotoListViewModel {
 extension PhotoListViewModel {
     
     func getCellViewModel( at indexPath: IndexPath ) -> PhotoListCellViewModel {
-        return cellViewMdoels[indexPath.row]
+        return cellViewModelsRelay.value[indexPath.row]
     }
     
     func createCellViewModel( photo: Photo ) -> PhotoListCellViewModel {
