@@ -1,22 +1,35 @@
 PODS:
+  - RxAtomic (4.4.0)
+  - RxCocoa (4.4.0):
+    - RxSwift (~> 4.0)
+  - RxSwift (4.4.0):
+    - RxAtomic (~> 4.4)
   - SDWebImage (4.4.3):
     - SDWebImage/Core (= 4.4.3)
   - SDWebImage/Core (4.4.3)
   - SnapKit (4.2.0)
 
 DEPENDENCIES:
+  - RxCocoa
+  - RxSwift
   - SDWebImage
   - SnapKit
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - RxAtomic
+    - RxCocoa
+    - RxSwift
     - SDWebImage
     - SnapKit
 
 SPEC CHECKSUMS:
+  RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
+  RxCocoa: df63ebf7b9a70d6b4eeea407ed5dd4efc8979749
+  RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
   SDWebImage: c5594f1a19c48d526d321e548902b56b479cd508
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
-PODFILE CHECKSUM: c78f35eda546cdc05f5c3b7534f93612963ea00f
+PODFILE CHECKSUM: 435248883acf51bd96f35110767dc88b8ad32900
 
 COCOAPODS: 1.5.3
