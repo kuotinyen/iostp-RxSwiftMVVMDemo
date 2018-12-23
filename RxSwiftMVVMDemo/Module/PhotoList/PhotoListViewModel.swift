@@ -20,6 +20,9 @@ class PhotoListViewModel {
     var cellViewModels: Observable<[PhotoListCellViewModel]> { return cellViewModelsRelay.asObservable() }
     private let cellViewModelsRelay: BehaviorRelay<[PhotoListCellViewModel]> = BehaviorRelay(value: [])
     
+    var isFetchingPhotos: Observable<Bool> { return isFetchingPhotosRelay.asObservable() }
+    private let isFetchingPhotosRelay: BehaviorRelay<Bool> = BehaviorRelay(value: false)
+    
     let bag = DisposeBag()
     
     var numberOfCells: Int {
@@ -31,7 +34,6 @@ class PhotoListViewModel {
     var selectedPhoto: Photo?
 
     var showAlertClosure: (( _ message: String )->())?
-    var updateLoadingStatus: ((Bool)->())?
     
     init( apiService: APIServiceProtocol ) {
         self.apiService = apiService
@@ -49,11 +51,10 @@ class PhotoListViewModel {
     
     func viewIsReady() {
         
-        self.updateLoadingStatus?( true )
+        isFetchingPhotosRelay.accept(true)
         apiService.fetchPopularPhoto { [weak self] (success, photos, error) in
             self?.photosRelay.accept(photos)
-        
-            self?.updateLoadingStatus?(false)
+            self?.isFetchingPhotosRelay.accept(false)
         }
     }
     

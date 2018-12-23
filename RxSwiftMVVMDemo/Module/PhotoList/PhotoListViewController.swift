@@ -49,17 +49,20 @@ class PhotoListViewController: UIViewController {
             }
         }
         
-        viewModel.updateLoadingStatus = { [weak self] isLoading in
-            DispatchQueue.main.async {
+        viewModel.isFetchingPhotos
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (isLoading) in
+                guard let `self` = self else { return }
+                
                 if isLoading {
-                    self?.activityIndicator.startAnimating()
-                    self?.tableView.alpha = 0.0
-                }else {
-                    self?.activityIndicator.stopAnimating()
-                    self?.tableView.alpha = 1.0
+                    self.activityIndicator.startAnimating()
+                    self.tableView.alpha = 0.0
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    self.tableView.alpha = 1.0
                 }
-            }
-        }
+            })
+            .disposed(by: bag)
         
         viewModel.cellViewModels
             .observeOn(MainScheduler.instance)
