@@ -23,17 +23,14 @@ class PhotoListViewModel {
     var isFetchingPhotos: Observable<Bool> { return isFetchingPhotosRelay.asObservable() }
     private let isFetchingPhotosRelay: BehaviorRelay<Bool> = BehaviorRelay(value: false)
     
+    var userPressedPhoto: Observable<PressPhotoResult> { return userPressedPhotoSubject.asObservable() }
+    private let userPressedPhotoSubject: PublishSubject<PressPhotoResult> = PublishSubject()
+    
     let bag = DisposeBag()
     
     var numberOfCells: Int {
         return cellViewModelsRelay.value.count
     }
-    
-    var isAllowSegue: Bool = false
-    
-    var selectedPhoto: Photo?
-
-    var showAlertClosure: (( _ message: String )->())?
     
     init( apiService: APIServiceProtocol ) {
         self.apiService = apiService
@@ -58,6 +55,28 @@ class PhotoListViewModel {
         }
     }
     
+}
+
+enum PhotoError: Error {
+    case userPressedNotSaleError
+}
+
+enum PressPhotoResult {
+    case photo(Photo)
+    case error(PhotoError)
+}
+
+extension PhotoListViewModel {
+    
+    func userPressed(at indexPath: IndexPath) {
+        let photo = self.photosRelay.value[indexPath.row]
+        
+        let result = photo.for_sale ?
+            PressPhotoResult.photo(photo) :
+            PressPhotoResult.error(PhotoError.userPressedNotSaleError)
+        
+        userPressedPhotoSubject.onNext(result)
+    }
 }
 
 extension PhotoListViewModel {
@@ -87,22 +106,6 @@ extension PhotoListViewModel {
                                        dateText: dateFormatter.string(from: photo.created_at) )
     }
 }
-
-extension PhotoListViewModel {
-    func userPressed( at indexPath: IndexPath ){
-        let photo = self.photosRelay.value[indexPath.row]
-        if photo.for_sale {
-            self.isAllowSegue = true
-            self.selectedPhoto = photo
-        }else {
-            self.isAllowSegue = false
-            self.selectedPhoto = nil
-            self.showAlertClosure?( "This item is not for sale")
-        }
-        
-    }
-}
-
 
 struct PhotoListCellViewModel {
     let titleText: String

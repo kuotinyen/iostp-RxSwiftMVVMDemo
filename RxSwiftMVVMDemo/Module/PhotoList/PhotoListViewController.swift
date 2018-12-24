@@ -42,12 +42,21 @@ class PhotoListViewController: UIViewController {
     
     func initVM() {
         
-        // Naive binding
-        viewModel.showAlertClosure = { [weak self] message in
-            DispatchQueue.main.async {
-                self?.showAlert( message )
-            }
-        }
+        viewModel.userPressedPhoto
+            .observeOn(MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] (result) in
+                    guard let `self` = self else { return }
+                    
+                    switch result {
+                    case .photo(let photo):
+                        self.goDetailVC(with: photo.image_url)
+                    case .error(_):
+                        self.showAlert("This item is not for sale")
+                    }
+                }
+            )
+            .disposed(by: bag)
         
         viewModel.isFetchingPhotos
             .observeOn(MainScheduler.instance)
@@ -117,18 +126,13 @@ extension PhotoListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         self.viewModel.userPressed(at: indexPath)
-        if viewModel.isAllowSegue {
-            goDetailVC()
-        }
     }
     
-    func goDetailVC() {
+    func goDetailVC(with imageUrl: String) {
         let vc = PhotoDetailViewController()
-        let photo = viewModel.selectedPhoto
-        vc.imageUrl = photo?.image_url
-        
+        vc.imageUrl = imageUrl
+
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
