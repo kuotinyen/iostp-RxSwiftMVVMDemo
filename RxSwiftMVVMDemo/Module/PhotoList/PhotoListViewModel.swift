@@ -39,10 +39,7 @@ class PhotoListViewModel {
             .map { photos -> [PhotoListCellViewModel] in
                 photos.map { self.createCellViewModel(photo: $0) }
             }
-            .subscribe(onNext: { [weak self] (vms) in
-                guard let `self` = self else { return }
-                self.cellViewModelsRelay.accept(vms)
-            })
+            .bind(to: cellViewModelsRelay)
             .disposed(by: bag)
     }
     
