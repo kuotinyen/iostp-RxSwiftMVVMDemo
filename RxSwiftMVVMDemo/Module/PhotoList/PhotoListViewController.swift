@@ -59,14 +59,12 @@ class PhotoListViewController: UIViewController {
             .disposed(by: bag)
         
         viewModel.isFetchingPhotos
-            .observeOn(MainScheduler.instance)
-            .bind(to: activityIndicator.rx.isAnimating)
+            .drive(activityIndicator.rx.isAnimating)
             .disposed(by: bag)
         
         viewModel.isFetchingPhotos
             .map { $0 ? 0.0 : 1.0 }
-            .observeOn(MainScheduler.instance)
-            .bind(to: tableView.rx.alpha)
+            .drive(tableView.rx.alpha)
             .disposed(by: bag)
         
         viewModel.cellViewModels

@@ -20,7 +20,7 @@ class PhotoListViewModel {
     var cellViewModels: Observable<[PhotoListCellViewModel]> { return cellViewModelsRelay.asObservable() }
     private let cellViewModelsRelay: BehaviorRelay<[PhotoListCellViewModel]> = BehaviorRelay(value: [])
     
-    var isFetchingPhotos: Observable<Bool> { return isFetchingPhotosRelay.asObservable() }
+    var isFetchingPhotos: Driver<Bool> { return isFetchingPhotosRelay.asDriver() }
     private let isFetchingPhotosRelay: BehaviorRelay<Bool> = BehaviorRelay(value: false)
     
     var userPressedPhoto: Observable<PressPhotoResult> { return userPressedPhotoSubject.asObservable() }
