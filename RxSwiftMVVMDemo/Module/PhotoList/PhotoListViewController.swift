@@ -60,17 +60,13 @@ class PhotoListViewController: UIViewController {
         
         viewModel.isFetchingPhotos
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] (isLoading) in
-                guard let `self` = self else { return }
-                
-                if isLoading {
-                    self.activityIndicator.startAnimating()
-                    self.tableView.alpha = 0.0
-                } else {
-                    self.activityIndicator.stopAnimating()
-                    self.tableView.alpha = 1.0
-                }
-            })
+            .bind(to: activityIndicator.rx.isAnimating)
+            .disposed(by: bag)
+        
+        viewModel.isFetchingPhotos
+            .map { $0 ? 0.0 : 1.0 }
+            .observeOn(MainScheduler.instance)
+            .bind(to: tableView.rx.alpha)
             .disposed(by: bag)
         
         viewModel.cellViewModels
